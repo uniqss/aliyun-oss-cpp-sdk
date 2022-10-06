@@ -34,6 +34,33 @@ option(ENABLE_COVERAGE "Flag to enable/disable building code with -fprofile-arcs
 option(ENABLE_RTTI "Flag to enable/disable building code with RTTI information" ON)
 
 
+
+
+# mt mtd
+if (WIN32)
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+	set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+	set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+	set(CompilerFlags
+        CMAKE_CXX_FLAGS
+        CMAKE_CXX_FLAGS_DEBUG
+        CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_C_FLAGS
+        CMAKE_C_FLAGS_DEBUG
+        CMAKE_C_FLAGS_RELEASE
+        )
+	foreach(CompilerFlag ${CompilerFlags})
+	string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+	endforeach()
+else()
+	#find_package(asio CONFIG REQUIRED)
+endif()
+
+
+
+
 #Platform
 if (CMAKE_CROSSCOMPILING)
 	if (${CMAKE_SYSTEM_NAME} STREQUAL "Android")
@@ -68,13 +95,13 @@ if (${TARGET_OS} STREQUAL "WINDOWS")
 	set(WLIB_TARGET "x64")
 	endif()
 	set(CRYPTO_LIBS 
-		${CMAKE_SOURCE_DIR}/third_party/lib/${WLIB_TARGET}/ssleay32.lib 
-		${CMAKE_SOURCE_DIR}/third_party/lib/${WLIB_TARGET}/libeay32.lib)
+		${CMAKE_SOURCE_DIR}/third_party/lib/${WLIB_TARGET}/Debug/libcrypto.lib 
+		${CMAKE_SOURCE_DIR}/third_party/lib/${WLIB_TARGET}/Debug/libssl.lib)
 	set(CRYPTO_INCLUDE_DIRS 
 		${CMAKE_SOURCE_DIR}/third_party/include) 
 
 	set(CLIENT_LIBS 
-		${CMAKE_SOURCE_DIR}/third_party/lib/${WLIB_TARGET}/libcurl.lib) 
+		${CMAKE_SOURCE_DIR}/third_party/lib/${WLIB_TARGET}/Debug/libcurl.lib) 
 	set(CLIENT_INCLUDE_DIRS 
 		${CMAKE_SOURCE_DIR}/third_party/include) 
 else()
